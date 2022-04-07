@@ -20,25 +20,20 @@ const showDate = function(dateString) {
 }
 
 
-const wrapper = document.querySelector(".col-9")
-const productList = createElement("ul", "row list-unstyled g-3");
-
-
-for (let i = 0; i < products.length; i++) {
-    const currentProduct = products[i];
+const renderProduct = function(addedproduct) {
 
     const productItem = createElement("li", "col-4");
     const card = createElement("div", "card");
     const productImg = createElement("img", "card-img-top");
-    productImg.src = currentProduct.img
+    productImg.src = addedproduct.img
     const cardBody = createElement("div", "card-body");
-    const cardTitle = createElement("h3", "card-title", currentProduct.title);
+    const cardTitle = createElement("h3", "card-title", addedproduct.title);
     const currentPrice = createElement("p", "card-text fw-bold");
-    const mark = createElement("mark", "", currentProduct.price);
+    const mark = createElement("mark", "", addedproduct.price);
     const lastPrice = createElement("p", "card-text");
-    const delPrice = createElement("s", "", currentProduct.lastPrice);
-    const productModel = createElement("p", "badge bg-success", currentProduct.model);
-    const addDate = createElement("p","card-text", showDate(currentProduct.addedDate));
+    const delPrice = createElement("s", "", addedproduct.lastPrice);
+    const productModel = createElement("p", "badge bg-success", addedproduct.model);
+    const addDate = createElement("p","card-text", showDate(addedproduct.addedDate));
 
     const btnDiv = createElement("div", "position-absolute top-0 end-0 d-flex");
     const btn = createElement("button", "btn rounded-0 btn-secondary");
@@ -49,15 +44,13 @@ for (let i = 0; i < products.length; i++) {
 
     const benefList = createElement("ul", "d-flex flex-wrap list-unstyled");
 
+    for (let j = 0; j < addedproduct.benefits.length; j++) {
+         const benefit = addedproduct.benefits[j];
 
-    for (let j = 0; j < currentProduct.benefits.length; j++) {
-        const benefit = currentProduct.benefits[j];
-
-        const benefItem = createElement("li", "badge bg-primary me-1 mb-1", benefit);
+         const benefItem = createElement("li", "badge bg-primary me-1 mb-1", benefit);
 
         benefList.append(benefItem);
     }
-
 
     wrapper.append(productList);
     productList.append(productItem);
@@ -77,8 +70,58 @@ for (let i = 0; i < products.length; i++) {
     btnDiv.append(btnSec);
     btn.append(btnI);
     btnSec.append(btnSecI);
+
+    return productItem;
 }
 
+const selectInput = document.querySelector("#product-manufacturer");
+for (let k = 0; k < manufacturers.length; k++) {
+    const selectOption = createElement("option", "", manufacturers[k].name);
+    selectOption.id = manufacturers[k].id;
+
+    selectInput.append(selectOption);
+}
+
+
+const wrapper = document.querySelector(".col-9")
+const productList = createElement("ul", "row list-unstyled g-3");
+
+
+for (let i = 0; i < products.length; i++) {
+    const currentProduct = products[i];
+
+    const prodItem = renderProduct(currentProduct);
+    
+
+    productList.append(prodItem);
+    
+}
+
+
+
+const benef = document.querySelector("#benefits");
+const benefArray = [];
+benef.addEventListener("input", function() {
+    const benefVaue = benef.value;
+
+    const benefSplitet = benefVaue.split(";");
+
+    if (benefSplitet.length == 2) {
+        benefArray.push(benefSplitet[0]);
+
+        benef.value = "";
+        const benefWrapper = document.querySelector(".benifits-wrapper");
+        benefWrapper.textContent = "";
+        for (let a = 0; a < benefArray.length; a++) {
+            const benefItem = createElement("li", "me-1 mb-1");
+            const benefBtn = createElement("button", "btn btn-sm badge rounded-pill btn-danger", benefArray[a]);
+            benefWrapper.append(benefItem);
+            benefItem.append(benefBtn);
+        }
+    }
+
+
+});
 
 
 
@@ -92,27 +135,33 @@ addForm.addEventListener("submit", function(evt){
 
     const titleInput = document.querySelector("#product-title");
     const priceInput = document.querySelector("#price");
-    const selectInput = document.querySelector("#product-manufacturers");
+    const selectInput = document.querySelector("#product-manufacturer");
     const benefitInput = document.querySelector("#benefits");
 
     const titleInputValue = titleInput.value;
     const priceInputValue = priceInput.value;
     const selectInputValue = selectInput.value;
-    const benefitInputValue = benefitInput.value;
+    
 
-    if (titleInputValue.trim() && priceInputValue.trim() && selectInputValue.trim() && benefitInputValue.trim()){
+    if (titleInputValue.trim() && priceInputValue.trim() && selectInputValue && benefArray){
 
         const newProduct = {
             id: Math.floor(Math.random() * 1000),
             title: titleInputValue,
             price: priceInputValue,
             model: selectInputValue,
+            img: "https://picsum.photos/300/200",
             addedDate: new Date().toISOString(), 
+            benefits: benefArray
         }
 
         products.push(newProduct);
+        
 
         addForm.reset();
         addModal.hide();
+
+        const productIte = renderProduct(newProduct);
+        productList.append(productIte);
     }
 });
