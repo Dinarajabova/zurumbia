@@ -22,6 +22,9 @@ const showDate = function(dateString) {
 
 const renderProduct = function(addedproduct) {
 
+    const { id, title, img, price, model, addedDate, benefits } = addedproduct;
+    
+
     const productItem = createElement("li", "col-4");
     const card = createElement("div", "card");
     const productImg = createElement("img", "card-img-top");
@@ -70,6 +73,9 @@ const renderProduct = function(addedproduct) {
     btnDiv.append(btnSec);
     btn.append(btnI);
     btnSec.append(btnSecI);
+
+    btnSecI.style.pointerEvents = "none";
+    btnSec.setAttribute("data-addedproduct", id);
 
     return productItem;
 }
@@ -165,3 +171,29 @@ addForm.addEventListener("submit", function(evt){
         productList.append(productIte);
     }
 });
+
+
+ 
+
+const renderProducts = function() {
+
+    productList.innerHTML = "";  
+       products.forEach(function(addedproduct) {
+           const productItem = renderProduct(addedproduct);
+           productList.append(productItem);
+       })
+}
+
+productList.addEventListener("click", function(evt) {
+    if (evt.target.matches(".btn-danger")) {
+       const clickedItemId = +evt.target.dataset.addedproduct;
+
+        const clickedItemIndex = products.findIndex(function(addedproduct) {
+           return addedproduct.id === clickedItemId
+       })
+       
+       products.splice(clickedItemIndex, 1);
+
+       renderProducts();
+    }
+})
