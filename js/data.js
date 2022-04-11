@@ -18,7 +18,17 @@ const products = [
     model: "Samsung",
     addedDate: new Date("2021-10-12").toISOString(),
     benefits: ["32gb", "1tb"]
-  }
+  },
+  {
+    id: 125,
+    title: "Iphone 14 Pro Max",
+    img: "https://picsum.photos/300/200",
+    price: 19000000,
+    lastPrice: 20000000,
+    model: "Apple",
+    addedDate: new Date("2021-10-12").toISOString(),
+    benefits: ["120Hz display", "1Tb", "waterproof"]
+  },
 ]
 
 const manufacturers = [

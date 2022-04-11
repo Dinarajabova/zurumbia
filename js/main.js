@@ -74,6 +74,11 @@ const renderProduct = function(addedproduct) {
     btn.append(btnI);
     btnSec.append(btnSecI);
 
+
+    btn.setAttribute("data-bs-toggle", "modal");
+    btn.setAttribute("data-bs-target", "#edit-student-modal");
+    btn.setAttribute("data-addedproduct", id);
+    btnI.style.pointerEvents = "none";
     btnSecI.style.pointerEvents = "none";
     btnSec.setAttribute("data-addedproduct", id);
 
@@ -184,6 +189,12 @@ const renderProducts = function() {
        })
 }
 
+
+const editTitle = document.querySelector("#product-title");
+const editPrice = document.querySelector("#price");
+const editManufacturer = document.querySelector("#product-manufacturer");
+const editBenefits = document.querySelector("#benefits");
+
 productList.addEventListener("click", function(evt) {
     if (evt.target.matches(".btn-danger")) {
        const clickedItemId = +evt.target.dataset.addedproduct;
@@ -195,5 +206,18 @@ productList.addEventListener("click", function(evt) {
        products.splice(clickedItemIndex, 1);
 
        renderProducts();
+    } else if (evt.target.matches(".btn-secondary")) {
+        const clickedId = +evt.target.dataset.addedproduct;
+
+        const clickedItem = products.find(function(addedproduct) {
+            return addedproduct.id === clickedId
+            
+        })
+        
+        editTitle.value = clickedItem.title;
+        editPrice.value = clickedItem.price;
+        editManufacturer = clickedItem.model;
+        editBenefits = clickedItem.benefits;
+
     }
 })
