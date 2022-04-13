@@ -76,7 +76,7 @@ const renderProduct = function(addedproduct) {
 
 
     btn.setAttribute("data-bs-toggle", "modal");
-    btn.setAttribute("data-bs-target", "#edit-student-modal");
+    btn.setAttribute("data-bs-target", "#edit-product-modal");
     btn.setAttribute("data-addedproduct", id);
     btnI.style.pointerEvents = "none";
     btnSecI.style.pointerEvents = "none";
@@ -180,20 +180,21 @@ addForm.addEventListener("submit", function(evt){
 
  
 
-const renderProducts = function() {
+const renderProducts = function(productsArray = products) {
 
-    productList.innerHTML = "";  
-       products.forEach(function(addedproduct) {
-           const productItem = renderProduct(addedproduct);
-           productList.append(productItem);
-       })
+    productList.innerHTML = ""; 
+
+    productsArray.forEach(function(addedproduct) {
+       const addedproductItem = renderProduct(addedproduct);
+       productList.append(addedproductItem);
+    })
 }
 
 
-const editTitle = document.querySelector("#product-title");
-const editPrice = document.querySelector("#price");
-const editManufacturer = document.querySelector("#product-manufacturer");
-const editBenefits = document.querySelector("#benefits");
+const editTitle = document.querySelector("#edit-product-title");
+const editPrice = document.querySelector("#edit-price");     
+const editManufacturer = document.querySelector("#edit-product-manufacturer");
+const editBenefits = document.querySelector("#edit-benefits");
 
 productList.addEventListener("click", function(evt) {
     if (evt.target.matches(".btn-danger")) {
@@ -212,12 +213,88 @@ productList.addEventListener("click", function(evt) {
         const clickedItem = products.find(function(addedproduct) {
             return addedproduct.id === clickedId
             
+            
         })
         
         editTitle.value = clickedItem.title;
         editPrice.value = clickedItem.price;
-        editManufacturer = clickedItem.model;
-        editBenefits = clickedItem.benefits;
+        editManufacturer.value = clickedItem.model;
+        editBenefits.value = clickedItem.benefits;
 
+        editForm.setAttribute("data-editing-id", clickedItem.id)        
     }
 })
+
+
+const editForm = document.querySelector("#edit-form");
+editForm.addEventListener("submit", function(evt) {
+    evt.preventDefault();
+
+    const editId = +evt.target.dataset.editingId;
+
+    
+    const titleEditted = document.querySelector("#product-title");
+    const priceEditted = document.querySelector("#price");
+    const selectEditted = document.querySelector("#product-manufacturer");
+    const benefitEditted = document.querySelector("#benefits");
+
+    const titleEdittedValue = titleEditted.value;
+    const priceEdittedValue = priceEditted.value;
+    const selectEdittedValue = selectEditted.value;
+    
+
+    if (titleEdittedValue.trim() && priceEdittedValue.trim() && selectEdittedValue && benefArray){
+
+        const edittedProduct = {
+            id: editId,
+            title: titleEdittedValue,
+            price: priceEdittedValue,
+            model: selectEdittedValue,
+            img: "https://picsum.photos/300/200",
+            addedDate: new Date().toISOString(), 
+            benefits: benefArray
+        }
+
+
+        const editingItemIndex = products.findIndex(function(addedproduct) {
+            return addedproduct.id === editId 
+        })
+
+        products.splice(editingItemIndex, 1, edittedProduct);
+        
+
+        editForm.reset();
+        
+        renderProduct();
+        // const productIte = renderProduct(newProduct);
+        // productList.append(productIte);
+    }
+   
+})
+
+const filterForm = document.querySelector(".filter");
+
+filterForm.addEventListener("submit", function(evt) {
+    evt.preventDefault();
+
+    const elements = evt.target.elements;
+    const fromValue = elements.from.value;
+
+    const toValue = elements.to.value;
+
+    const filteredProducts = products.filter(function(product) {
+        return product.price >= fromValue;
+    }).filter(function(product) {
+
+        
+        return !toValue ? true : product.price <= toValue;
+    });
+
+    
+
+    renderProducts(filteredProducts);
+   
+})
+ 
+
+
